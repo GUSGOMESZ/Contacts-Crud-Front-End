@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const LIST_CONTACT = gql`
-  query ListContact {
-    listContact {
+  query ListContact($filter: ContactFilterInput) {
+    listContact(filter: $filter) {
       results {
         id
         phone
