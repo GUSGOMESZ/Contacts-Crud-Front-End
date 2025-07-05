@@ -7,7 +7,6 @@ interface CreateContactModalParams {
   handleCreateSubmit: (e?: React.FormEvent) => Promise<void>;
   handleCreateInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   createFormData: FormData;
-  photo: File | null;
   setPhoto: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
@@ -16,7 +15,6 @@ export function CreateContactModal({
   handleCreateSubmit,
   handleCreateInputChange,
   createFormData,
-  photo,
   setPhoto,
 }: CreateContactModalParams) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);

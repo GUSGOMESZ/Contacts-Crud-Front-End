@@ -11,6 +11,7 @@ import { LoadingCard } from "./components/LoadingCard";
 import { NotFound } from "./components/NotFound";
 import { CreateContactModal } from "./components/CreateContactModal";
 import { EditContactModal } from "./components/EditContactModal";
+import { v4 as uuidv4 } from "uuid";
 
 interface Contact {
   id: string;
@@ -77,29 +78,44 @@ export function App() {
   const handleCreateSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
+    const possibleHash = photo ? uuidv4() : "";
+
     const input = {
       name: createFormData.name,
       email: createFormData.email,
       phone: createFormData.phone,
       company: createFormData.company,
+      photoHash: possibleHash,
     };
 
-    const createResponse = await createContact({
-      variables: {
-        input: input,
-      },
-    });
+    try {
+      const createResponse = await createContact({
+        variables: { input },
+      });
 
-    if (createResponse?.data?.createContact?.result !== null) {
-      if (photo) {
-        console.log("Mandar pra AWS !");
-      } else {
-        console.log("Sem foto !");
+      if (!createResponse?.data?.createContact?.result) {
+        throw new Error("Falha na criação do contato");
       }
+
+      if (photo) {
+        const uploadForm = new FormData();
+        uploadForm.append("photo", photo);
+        uploadForm.append("hash", possibleHash);
+
+        const response = await fetch(
+          `http://localhost:4000/api/upload_profile_photo`,
+          { method: "POST", body: uploadForm }
+        );
+
+        if (!response.ok) {
+          throw new Error("Falha no upload da foto");
+        }
+      }
+
       toast.success("Contato criado com sucesso.");
       resetCreateForm();
-    } else {
-      toast.error("Erro ao criar contato.");
+    } catch (error) {
+      console.error("Erro completo:", error);
     }
   };
 
@@ -269,7 +285,6 @@ export function App() {
           handleCreateSubmit={handleCreateSubmit}
           handleCreateInputChange={handleCreateInputChange}
           createFormData={createFormData}
-          photo={photo}
           setPhoto={setPhoto}
         />
       )}
