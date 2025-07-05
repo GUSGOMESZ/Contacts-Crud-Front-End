@@ -173,6 +173,7 @@ export function App() {
   const resetCreateForm = () => {
     setCreateFormData({ name: "", email: "", phone: "", company: "" });
     setIsCreateModalOpen(false);
+    setPhoto(null);
   };
 
   const resetEditForm = () => {
