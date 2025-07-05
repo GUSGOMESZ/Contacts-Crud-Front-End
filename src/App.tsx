@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Trash2, Phone, Mail, User, Building } from "lucide-react";
+import { Edit, Trash2, Phone, Mail, Building } from "lucide-react";
 import { useCreateContact } from "./hooks/useCreateContact";
 import { useUpdateContact } from "./hooks/useUpdateContact";
 import { useListContact } from "./hooks/useListContact";
@@ -11,6 +11,7 @@ import { LoadingCard } from "./components/LoadingCard";
 import { NotFound } from "./components/NotFound";
 import { CreateContactModal } from "./components/CreateContactModal";
 import { EditContactModal } from "./components/EditContactModal";
+import { ContactAvatar } from "./components/ContactAvatar";
 import { v4 as uuidv4 } from "uuid";
 
 interface Contact {
@@ -19,6 +20,7 @@ interface Contact {
   email: string;
   phone: string;
   company: string;
+  photoHash: string;
 }
 
 export interface FormData {
@@ -232,9 +234,7 @@ export function App() {
                   className="group bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/60 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-gray-900/20 transform hover:-translate-y-1"
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <User className="w-6 h-6 text-white" />
-                    </div>
+                    <ContactAvatar photoHash={contact.photoHash} />
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button
                         onClick={() => handleEditClick(contact)}
