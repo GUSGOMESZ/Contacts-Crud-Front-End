@@ -44,6 +44,7 @@ export function App() {
     phone: "",
     company: "",
   });
+  const [photo, setPhoto] = useState<File | null>(null);
   const [editFormData, setEditFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -65,7 +66,7 @@ export function App() {
       company: filters.company ? { ilike: `${filters.company}%` } : undefined,
     });
 
-  console.log(data_list_contact);
+  // console.log(data_list_contact);
 
   const { createContact } = useCreateContact(refetch_list_contact);
   const { updateContact } = useUpdateContact(refetch_list_contact);
@@ -90,6 +91,11 @@ export function App() {
     });
 
     if (createResponse?.data?.createContact?.result !== null) {
+      if (photo) {
+        console.log("Mandar pra AWS !");
+      } else {
+        console.log("Sem foto !");
+      }
       toast.success("Contato criado com sucesso.");
       resetCreateForm();
     } else {
@@ -185,7 +191,7 @@ export function App() {
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log(filters);
+  // console.log(filters);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -263,6 +269,8 @@ export function App() {
           handleCreateSubmit={handleCreateSubmit}
           handleCreateInputChange={handleCreateInputChange}
           createFormData={createFormData}
+          photo={photo}
+          setPhoto={setPhoto}
         />
       )}
 

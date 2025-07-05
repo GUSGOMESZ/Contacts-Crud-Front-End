@@ -1,11 +1,14 @@
-import { Check, X } from "lucide-react";
+import { Check, X, Camera, User } from "lucide-react";
 import { type FormData } from "../App";
+import { useState } from "react";
 
 interface CreateContactModalParams {
   resetCreateForm: () => void;
   handleCreateSubmit: (e?: React.FormEvent) => Promise<void>;
   handleCreateInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   createFormData: FormData;
+  photo: File | null;
+  setPhoto: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export function CreateContactModal({
@@ -13,7 +16,34 @@ export function CreateContactModal({
   handleCreateSubmit,
   handleCreateInputChange,
   createFormData,
+  photo,
+  setPhoto,
 }: CreateContactModalParams) {
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && setPhoto) {
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPhotoPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    const fileInput = document.getElementById(
+      "photo-upload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-gray-800 border border-gray-700/50 rounded-2xl p-8 w-full max-w-md transform transition-all duration-300 scale-100 shadow-2xl">
@@ -28,6 +58,45 @@ export function CreateContactModal({
         </div>
 
         <form onSubmit={handleCreateSubmit} className="space-y-4">
+          {/* Campo de foto */}
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-gray-700/50 border-2 border-gray-600/50 flex items-center justify-center overflow-hidden">
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-8 h-8 text-gray-400" />
+                )}
+              </div>
+              <label
+                htmlFor="photo-upload"
+                className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 shadow-lg"
+              >
+                <Camera className="w-4 h-4 text-white" />
+              </label>
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="absolute -top-1 -left-1 w-6 h-6 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 shadow-lg"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              )}
+              <input
+                id="photo-upload"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Nome
