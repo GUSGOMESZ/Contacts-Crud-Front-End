@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Plus,
-  Search,
   Edit,
   Trash2,
   Phone,
@@ -55,12 +54,15 @@ export function App() {
     company: "",
   });
 
-  const { data_list_contact, refetch_list_contact } = useListContact({
-    name: filters.name ? { ilike: `${filters.name}%` } : undefined,
-    email: filters.email ? { ilike: `${filters.email}%` } : undefined,
-    phone: filters.phone ? { ilike: `${filters.phone}%` } : undefined,
-    company: filters.company ? { ilike: `${filters.company}%` } : undefined,
-  });
+  const { data_list_contact, loading_list_contact, refetch_list_contact } =
+    useListContact({
+      name: filters.name ? { ilike: `${filters.name}%` } : undefined,
+      email: filters.email ? { ilike: `${filters.email}%` } : undefined,
+      phone: filters.phone ? { ilike: `${filters.phone}%` } : undefined,
+      company: filters.company ? { ilike: `${filters.company}%` } : undefined,
+    });
+
+  console.log(data_list_contact);
 
   const { createContact } = useCreateContact(refetch_list_contact);
   const { updateContact } = useUpdateContact(refetch_list_contact);
@@ -271,53 +273,91 @@ export function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data_list_contact?.listContact?.results?.map((contact: Contact) => (
-            <div
-              key={contact.id}
-              className="group bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/60 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-gray-900/20 transform hover:-translate-y-1"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <User className="w-6 h-6 text-white" />
+        {loading_list_contact ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 animate-pulse"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="w-12 h-12 bg-gray-700/50 rounded-xl"></div>
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 bg-gray-700/50 rounded-lg"></div>
+                    <div className="w-8 h-8 bg-gray-700/50 rounded-lg"></div>
+                  </div>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleEditClick(contact)}
-                    className="p-2 bg-gray-700/80 hover:bg-blue-600/80 text-blue-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(contact.id)}
-                    className="p-2 bg-gray-700/80 hover:bg-red-600/80 text-red-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+
+                <div className="h-6 bg-gray-700/50 rounded-lg mb-3 w-3/4"></div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gray-700/50 rounded"></div>
+                    <div className="h-4 bg-gray-700/50 rounded w-full"></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gray-700/50 rounded"></div>
+                    <div className="h-4 bg-gray-700/50 rounded w-2/3"></div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-gray-700/50 rounded"></div>
+                    <div className="h-4 bg-gray-700/50 rounded w-1/2"></div>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data_list_contact?.listContact?.results?.map(
+              (contact: Contact) => (
+                <div
+                  key={contact.id}
+                  className="group bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/60 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-gray-900/20 transform hover:-translate-y-1"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        onClick={() => handleEditClick(contact)}
+                        className="p-2 bg-gray-700/80 hover:bg-blue-600/80 text-blue-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(contact.id)}
+                        className="p-2 bg-gray-700/80 hover:bg-red-600/80 text-red-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
 
-              <h3 className="font-semibold text-gray-100 text-lg mb-3 group-hover:text-blue-400 transition-colors duration-300">
-                {contact.name}
-              </h3>
+                  <h3 className="font-semibold text-gray-100 text-lg mb-3 group-hover:text-blue-400 transition-colors duration-300">
+                    {contact.name}
+                  </h3>
 
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Mail className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm">{contact.email}</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Mail className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm">{contact.email}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Phone className="w-4 h-4 text-indigo-400" />
+                      <span className="text-sm">{contact.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <Building className="w-4 h-4 text-slate-400" />
+                      <span className="text-sm">{contact.company}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Phone className="w-4 h-4 text-indigo-400" />
-                  <span className="text-sm">{contact.phone}</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Building className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm">{contact.company}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              )
+            )}
+          </div>
+        )}
 
         {data_list_contact?.listContact?.results?.length === 0 && (
           <div className="text-center py-12">
