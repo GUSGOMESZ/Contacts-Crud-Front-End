@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { User } from "lucide-react";
+import { useGetProfilePhoto } from "../hooks/useGetProfilePhoto";
 
 interface ContactAvatarProps {
   photoHash: string | null;
@@ -14,26 +15,6 @@ export function ContactAvatar({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
-  const handleGetPhoto = async (photoKey: string) => {
-    try {
-      const encodedKey = encodeURIComponent(photoKey);
-      const response = await fetch(
-        `http://localhost:4000/api/get_profile_photo?key=${encodedKey}`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.presignedUrl;
-      } else {
-        console.log("Erro ao obter a foto, hash: " + photoKey);
-        return null;
-      }
-    } catch (error) {
-      console.log("Erro ao obter a foto, hash: " + photoKey);
-      return null;
-    }
-  };
-
   useEffect(() => {
     const fetchPhoto = async () => {
       if (!photoHash) {
@@ -43,7 +24,7 @@ export function ContactAvatar({
 
       try {
         setLoading(true);
-        const url = await handleGetPhoto(photoHash);
+        const url = await useGetProfilePhoto(photoHash);
         setPhotoUrl(url);
       } catch (error) {
         console.error("Erro ao carregar foto:", error);

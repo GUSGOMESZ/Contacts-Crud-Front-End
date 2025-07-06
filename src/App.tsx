@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Trash2, Phone, Mail, Building, User } from "lucide-react";
+import { Edit, Trash2, Phone, Mail } from "lucide-react";
 import { useCreateContact } from "./hooks/useCreateContact";
 import { useUpdateContact } from "./hooks/useUpdateContact";
 import { useListContact } from "./hooks/useListContact";
@@ -230,7 +230,6 @@ export function App() {
                   key={contact.id}
                   className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-gray-700 transition-all duration-300 flex flex-col"
                 >
-                  {/* Cabeçalho com altura reduzida */}
                   <div className="relative h-20 bg-gradient-to-r from-indigo-900/30 to-purple-900/30">
                     <div className="absolute -bottom-7 left-5">
                       <ContactAvatar
@@ -240,7 +239,6 @@ export function App() {
                     </div>
                   </div>
 
-                  {/* Corpo do card com ajustes de espaçamento */}
                   <div className="pt-9 px-5 pb-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -254,7 +252,6 @@ export function App() {
                         )}
                       </div>
 
-                      {/* Botões de ação */}
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEditClick(contact)}
@@ -271,7 +268,6 @@ export function App() {
                       </div>
                     </div>
 
-                    {/* Informações de contato */}
                     <div className="space-y-3 mt-3">
                       <div className="flex items-center gap-3 text-gray-300">
                         <div className="w-8 h-8 bg-blue-900/20 rounded-full flex items-center justify-center">
@@ -291,7 +287,6 @@ export function App() {
                     </div>
                   </div>
 
-                  {/* Rodapé discreto */}
                   <div className="mt-auto px-5 py-3 border-t border-gray-800 text-xs text-gray-500">
                     <span>
                       Criado em{" "}
