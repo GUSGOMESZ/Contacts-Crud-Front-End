@@ -13,6 +13,7 @@ import { CreateContactModal } from "./components/CreateContactModal";
 import { EditContactModal } from "./components/EditContactModal";
 import { ContactAvatar } from "./components/ContactAvatar";
 import { v4 as uuidv4 } from "uuid";
+import { compact } from "@apollo/client/utilities";
 
 interface Contact {
   id: string;
@@ -29,6 +30,7 @@ export interface FormData {
   email: string;
   phone: string;
   company: string;
+  photoHash?: string | null;
 }
 
 export interface IFilter {
@@ -54,7 +56,9 @@ export function App() {
     email: "",
     phone: "",
     company: "",
+    photoHash: null,
   });
+  const [changedPhoto, setChangedPhoto] = useState<boolean>(false);
   const [filters, setFilters] = useState<IFilter>({
     name: "",
     email: "",
@@ -124,6 +128,21 @@ export function App() {
     if (e) e.preventDefault();
     if (!editingContact) return;
 
+    console.log(editFormData);
+    console.log(photo);
+
+    let newPhotoHash: string | null = "";
+    const uploadForm = new FormData();
+
+    if (changedPhoto && !photo) newPhotoHash = null;
+
+    if (changedPhoto && photo) {
+      newPhotoHash = uuidv4();
+
+      uploadForm.append("photo", photo);
+      uploadForm.append("hash", newPhotoHash);
+    }
+
     const updateResponse = await updateContact({
       variables: {
         id: editingContact.id,
@@ -132,13 +151,24 @@ export function App() {
           phone: editFormData.phone,
           email: editFormData.email,
           company: editFormData.company,
+          photoHash: newPhotoHash,
         },
       },
     });
 
     if (updateResponse?.data?.updateContact?.result !== null) {
+      const response = await fetch(
+        `http://localhost:4000/api/upload_profile_photo`,
+        { method: "POST", body: uploadForm }
+      );
+
+      if (!response.ok) {
+        throw new Error("Falha no upload da foto");
+      }
+
       toast.success("Contato atualizado com sucesso.");
       resetEditForm();
+      refetch_list_contact();
     } else {
       toast.error("Erro ao atualizar contato.");
     }
@@ -151,6 +181,7 @@ export function App() {
       email: contact.email,
       phone: contact.phone,
       company: contact.company,
+      photoHash: contact.photoHash,
     });
     setIsEditModalOpen(true);
   };
@@ -178,7 +209,13 @@ export function App() {
   };
 
   const resetEditForm = () => {
-    setEditFormData({ name: "", email: "", phone: "", company: "" });
+    setEditFormData({
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      photoHash: null,
+    });
     setEditingContact(null);
     setIsEditModalOpen(false);
   };
@@ -320,6 +357,8 @@ export function App() {
           handleEditSubmit={handleEditSubmit}
           handleEditInputChange={handleEditInputChange}
           editFormData={editFormData}
+          setChangedPhoto={setChangedPhoto}
+          setPhoto={setPhoto}
         />
       )}
     </div>

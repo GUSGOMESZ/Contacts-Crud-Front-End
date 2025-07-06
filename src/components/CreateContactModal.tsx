@@ -56,7 +56,6 @@ export function CreateContactModal({
         </div>
 
         <form onSubmit={handleCreateSubmit} className="space-y-4">
-          {/* Campo de foto */}
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="w-24 h-24 rounded-full bg-gray-700/50 border-2 border-gray-600/50 flex items-center justify-center overflow-hidden">
