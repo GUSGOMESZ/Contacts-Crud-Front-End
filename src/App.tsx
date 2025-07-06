@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Trash2, Phone, Mail, Building } from "lucide-react";
+import { Edit, Trash2, Phone, Mail, Building, User } from "lucide-react";
 import { useCreateContact } from "./hooks/useCreateContact";
 import { useUpdateContact } from "./hooks/useUpdateContact";
 import { useListContact } from "./hooks/useListContact";
@@ -21,6 +21,7 @@ interface Contact {
   phone: string;
   company: string;
   photoHash: string;
+  createdAt: string;
 }
 
 export interface FormData {
@@ -74,8 +75,6 @@ export function App() {
   const { createContact } = useCreateContact(refetch_list_contact);
   const { updateContact } = useUpdateContact(refetch_list_contact);
   const { destroyContact } = useDestroyContact(refetch_list_contact);
-
-  // console.log(data_list_contact?.listContact?.results); // [{…}, {…}]
 
   const handleCreateSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -210,8 +209,6 @@ export function App() {
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // console.log(filters);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <Header setIsCreateModalOpen={setIsCreateModalOpen} />
@@ -231,43 +228,75 @@ export function App() {
               (contact: Contact) => (
                 <div
                   key={contact.id}
-                  className="group bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/60 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-gray-900/20 transform hover:-translate-y-1"
+                  className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-gray-700 transition-all duration-300 flex flex-col"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <ContactAvatar photoHash={contact.photoHash} />
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button
-                        onClick={() => handleEditClick(contact)}
-                        className="p-2 bg-gray-700/80 hover:bg-blue-600/80 text-blue-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(contact.id)}
-                        className="p-2 bg-gray-700/80 hover:bg-red-600/80 text-red-400 hover:text-white rounded-lg transition-all duration-200 shadow-sm"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  {/* Cabeçalho com altura reduzida */}
+                  <div className="relative h-20 bg-gradient-to-r from-indigo-900/30 to-purple-900/30">
+                    <div className="absolute -bottom-7 left-5">
+                      <ContactAvatar
+                        photoHash={contact.photoHash}
+                        className="w-18 h-18 border-4 border-gray-900"
+                      />
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-gray-100 text-lg mb-3 group-hover:text-blue-400 transition-colors duration-300">
-                    {contact.name}
-                  </h3>
+                  {/* Corpo do card com ajustes de espaçamento */}
+                  <div className="pt-9 px-5 pb-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-bold text-gray-100 text-xl">
+                          {contact.name}
+                        </h3>
+                        {contact.company && (
+                          <p className="text-sm text-gray-400 mt-1">
+                            {contact.company}
+                          </p>
+                        )}
+                      </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-gray-400">
-                      <Mail className="w-4 h-4 text-blue-400" />
-                      <span className="text-sm">{contact.email}</span>
+                      {/* Botões de ação */}
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleEditClick(contact)}
+                          className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-900/20 rounded-lg transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(contact.id)}
+                          className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-gray-400">
-                      <Phone className="w-4 h-4 text-indigo-400" />
-                      <span className="text-sm">{contact.phone}</span>
+
+                    {/* Informações de contato */}
+                    <div className="space-y-3 mt-3">
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <div className="w-8 h-8 bg-blue-900/20 rounded-full flex items-center justify-center">
+                          <Mail className="w-3.5 h-3.5 text-blue-400" />
+                        </div>
+                        <span className="text-sm truncate">
+                          {contact.email}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <div className="w-8 h-8 bg-indigo-900/20 rounded-full flex items-center justify-center">
+                          <Phone className="w-3.5 h-3.5 text-indigo-400" />
+                        </div>
+                        <span className="text-sm">{contact.phone}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-gray-400">
-                      <Building className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm">{contact.company}</span>
-                    </div>
+                  </div>
+
+                  {/* Rodapé discreto */}
+                  <div className="mt-auto px-5 py-3 border-t border-gray-800 text-xs text-gray-500">
+                    <span>
+                      Criado em{" "}
+                      {new Date(contact.createdAt).toLocaleDateString("pt-BR")}
+                    </span>
                   </div>
                 </div>
               )

@@ -10,6 +10,7 @@ export const LIST_CONTACT = gql`
         email
         company
         photoHash
+        createdAt
       }
     }
   }
