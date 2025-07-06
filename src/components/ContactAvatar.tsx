@@ -15,6 +15,8 @@ export function ContactAvatar({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
+  console.log(photoHash);
+
   useEffect(() => {
     const fetchPhoto = async () => {
       if (!photoHash) {

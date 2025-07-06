@@ -118,6 +118,7 @@ export function App() {
 
       toast.success("Contato criado com sucesso.");
       resetCreateForm();
+      refetch_list_contact();
     } catch (error) {
       console.error("Erro completo:", error);
     }
@@ -198,7 +199,7 @@ export function App() {
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, hash: string) => {
     const deleteResponse = await destroyContact({
       variables: {
         id: id,
@@ -208,6 +209,17 @@ export function App() {
     console.log(deleteResponse);
 
     if (deleteResponse?.data?.destroyContact?.result !== null) {
+      if (hash) {
+        const deletePhotoResponse = await fetch(
+          `http://localhost:4000/api/delete_profile_photo?hash=${hash}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        console.log(deletePhotoResponse);
+      }
+
       toast.success("Contato excluído com sucesso.");
     } else {
       toast.error("Erro ao excluir contato.");
@@ -282,6 +294,7 @@ export function App() {
                   <div className="relative h-20 bg-gradient-to-r from-indigo-900/30 to-purple-900/30">
                     <div className="absolute -bottom-7 left-5">
                       <ContactAvatar
+                        key={contact.id}
                         photoHash={contact.photoHash}
                         className="w-18 h-18 border-4 border-gray-900"
                       />
@@ -309,7 +322,9 @@ export function App() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(contact.id)}
+                          onClick={() =>
+                            handleDelete(contact.id, contact.photoHash)
+                          }
                           className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
