@@ -13,7 +13,6 @@ import { CreateContactModal } from "./components/CreateContactModal";
 import { EditContactModal } from "./components/EditContactModal";
 import { ContactAvatar } from "./components/ContactAvatar";
 import { v4 as uuidv4 } from "uuid";
-import { compact } from "@apollo/client/utilities";
 
 interface Contact {
   id: string;
@@ -157,6 +156,19 @@ export function App() {
     });
 
     if (updateResponse?.data?.updateContact?.result !== null) {
+      const oldHash = editFormData.photoHash;
+
+      if (oldHash) {
+        const deletePhotoResponse = await fetch(
+          `http://localhost:4000/api/delete_profile_photo?hash=${oldHash}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        console.log(deletePhotoResponse);
+      }
+
       const response = await fetch(
         `http://localhost:4000/api/upload_profile_photo`,
         { method: "POST", body: uploadForm }
